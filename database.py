@@ -1,5 +1,7 @@
 import os
 import sys
+import datetime
+
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -22,6 +24,7 @@ class User(Base):
     #last_name = Column(String(250), nullable=False)
     #email = Column(String(250), nullable=True)
     team_id = Column(Integer, ForeignKey('team.id'))
+    im_id = Column(String(250))
     team = relationship("Team", foreign_keys=[team_id])
     score = Column(Integer, default=0)
  
@@ -30,9 +33,9 @@ class Conversation(Base):
     id = Column(Integer, primary_key=True)
     from_user_id = Column(Integer, ForeignKey('user.id'))
     to_user_id = Column(Integer, ForeignKey('user.id'))
-    time_start = Column(DateTime)
-    time_end = Column(DateTime)
-    score = Column(Integer, nullable=False)
+    time_start = Column(DateTime, default=datetime.datetime.utcnow)
+    time_end = Column(DateTime, nullable=True)
+    #score = Column(Integer, nullable=True)
     from_user = relationship("User", foreign_keys=[from_user_id])
     to_user = relationship("User", foreign_keys=[to_user_id])
  
