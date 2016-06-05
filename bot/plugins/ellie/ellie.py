@@ -4,6 +4,10 @@ import json
 import sys
 import eliza
 
+# import talk_to_wit_from_python as witbot
+# def respond(input):
+#     return witbot.return_text_of_wit_reply("KIUPZGZHRIUHRMBOV5YKGQ2CGDD3X3ZJ", input)
+
 rules = {
     "?*x hey ?*y": [
         "Hey! I'm Ellie."
