@@ -24,7 +24,7 @@ class User(Base):
     #last_name = Column(String(250), nullable=False)
     #email = Column(String(250), nullable=True)
     team_id = Column(Integer, ForeignKey('team.id'))
-    im_id = Column(String(250))
+    im_id = Column(String(250), nullable=True)
     team = relationship("Team", foreign_keys=[team_id])
     score = Column(Integer, default=0)
  

@@ -21,7 +21,7 @@ Base.metadata.create_all(engine)
 
 CLIENT_ID = '34225236465.48252872646'
 CLIENT_SECRET = '0ffec6951613805313fd2af0796dfef6'
-SCOPE = 'users%3Aread+channels%3Awrite+chat%3Awrite%3Abot+chat%3Awrite%3Auser+bot'
+SCOPE = 'im%3Aread+users%3Aread+channels%3Awrite+chat%3Awrite%3Abot+chat%3Awrite%3Auser+bot'
 REDIRECT_URI='http://localhost:5000/oauth/step2/'
 
 app = Flask(__name__)
@@ -51,6 +51,20 @@ def oauth2_step2():
     
     sc = SlackClient(response['access_token'])
 
+
+    """
+    user_im_ids = {}
+    
+    im_list = sc.api_call('im.list')
+    return str(im_list)
+
+    
+    for im in im_list['ims']:
+        pass
+        #user_im_ids[im['user']] = im['id']
+
+    """
+
     user_list = sc.api_call("users.list")['members']
 
     for user_object in user_list:
@@ -61,9 +75,9 @@ def oauth2_step2():
         user_id = user_object['id']
 
         user_profile = user_object['profile']
-        
-        #first_name = user_profile['first_name']
-        #last_name = user_profile['last_name']
+
+        #im_id = user_im_ids[user_id]
+        #user = User(id=user_id, team=team, im_id=im_id)
 
         user = User(id=user_id, team=team)
         s.add(user)
@@ -76,6 +90,7 @@ def oauth2_step2():
     return jsonify(r.json())
     
 
+
 @app.route('/conversation/', methods=['POST'])
 def start_conversation():
     origin_user = request.form['origin_user']
@@ -84,47 +99,28 @@ def start_conversation():
     s = session()
 
     #Need to add validation here so that multiple conversations are not started by the same person
-    #conversation_exists = s.query(Conversation)
 
-    conversation = Conversation(from_user_id=origin_user, to_user_id=destination_user)
     s.add(conversation)
     s.commit()
 
     return "Success"
 
 
-
-@app.route('/message/', methods=['POST', 'GET'])
+@app.route('/message/', methods=['POST'])
 def send_message():    
-    origin_user = request.form['origin_user']
+    channel = request.form['channel']
     message = request.form['message']
-    
-    #access_token = 'xoxb-48229673667-O2UeLMKPQLY9ylFhtKMVLPif'#request.form['access_token']
-    
-    s = session()
+    access_token = request.form['access_token']
 
-    s.query(Conversation).filter(Conversation.from_user == origin_user).first()
-
-    """
+    #Ideally, the only parameters taken would be origin user + message. This can be worked on in a further iteration.
+    
     sc = SlackClient(access_token)
 
-    im_list = sc.api_call('im.list')
-
-    user_im_id = ''
-    for im in im_list['ims']:
-        if im['user'] == destination_user:
-            user_im_channel = im['id']
-    
     sc.rtm_connect()
-    sc.rtm_send_message(channel=user_im_channel, message=message)
-    """
-
+    sc.rtm_send_message(channel=channel, message=message)
+    
     return "Success"
     
-"""
-@app.route('/rate_user/', methods=['POST'])
-def rate_user():
-"""
 
 if __name__ == '__main__':
     app.run(debug=True)
