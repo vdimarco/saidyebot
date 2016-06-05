@@ -12,6 +12,7 @@ import requests
 import json
 import os
 
+
 Base = declarative_base()
 engine = create_engine('sqlite:///db.sqlite')
 session = sessionmaker()
