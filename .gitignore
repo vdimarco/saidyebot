@@ -1,6 +1,2 @@
 venv
-*~
-.DS_Store
-*.pyc
-*.sublime*
-*.dbsqlite
+*.sqlite
